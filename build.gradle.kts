@@ -6,6 +6,7 @@ plugins {
 
 allprojects {
     group = "hu.mezei.aml"
+    version = "0.0.1-SNAPSHOT"
     repositories { mavenCentral() }
 }
 
