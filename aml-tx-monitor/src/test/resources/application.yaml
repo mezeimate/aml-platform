@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: aml-tx-monitor
+  #only the beginnings
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+      - org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration
+
+server:
+  port: 8081
+

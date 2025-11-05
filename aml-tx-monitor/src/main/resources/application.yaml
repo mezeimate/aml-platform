@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: aml-tx-monitor
+
+server:
+  port: 8081
+
