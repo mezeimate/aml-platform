@@ -1,0 +1,39 @@
+version: "3.9"            # Docker Compose file format version
+name: aml                  # Project name (shown in Docker Desktop, prefixes networks/volumes)
+
+services:
+  postgres:
+    image: postgres:16-alpine        # Postgres base image (v16 on Alpine Linux)
+    container_name: aml-postgres     # Fixed container name (optional; omit for auto-naming)
+    environment:
+      POSTGRES_DB: aml               # DB name created at first start
+      POSTGRES_USER: aml             # DB username (dev-only credentials)
+      POSTGRES_PASSWORD: aml         # DB password (dev-only; don't use in prod)
+    ports:
+      - "5432:5432"                  # Expose Postgres to host: host 5432 → container 5432
+    volumes:
+      - aml-postgres-data:/var/lib/postgresql/data   # Persist database files in a named volume
+    healthcheck:
+      # Wait-until-ready probe for Postgres; pgAdmin depends on this via depends_on below
+      test: ["CMD-SHELL", "pg_isready -U aml -d aml"]
+      interval: 5s                   # Run the check every 5 seconds
+      timeout: 3s                    # Consider it failed if it takes longer than 3 seconds
+      retries: 10                    # Mark unhealthy after 10 failed checks
+
+  pgadmin:
+    image: dpage/pgadmin4:latest     # Web UI for managing Postgres
+    container_name: aml-pgadmin      # Fixed container name
+    depends_on:
+      postgres:
+        condition: service_healthy   # Start pgAdmin only after Postgres is healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com  # Initial login email (can be changed in UI)
+      PGADMIN_DEFAULT_PASSWORD: admin         # Initial password (dev-only!)
+    ports:
+      - "5050:80"                   # Host 5050 → pgAdmin’s internal port 80
+    volumes:
+      - aml-pgadmin-data:/var/lib/pgadmin     # Persist pgAdmin settings (saved servers, etc.)
+
+volumes:
+  aml-postgres-data:                # Named volume for Postgres data (lives outside the repo)
+  aml-pgadmin-data:                 # Named volume for pgAdmin configuration/state

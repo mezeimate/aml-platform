@@ -1,12 +1,16 @@
 spring:
   application:
     name: aml-tx-monitor
-  #only the beginnings
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
-      - org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aml
+    username: aml
+    password: aml
+  jooq:
+    sql-dialect: POSTGRES
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
 
 server:
   port: 8081

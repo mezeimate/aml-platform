@@ -154,3 +154,6 @@ Temporary Items
 
 # Ignore Gradle build output directory
 build
+
+/docker/_data/
+/docker/_data/**/*
