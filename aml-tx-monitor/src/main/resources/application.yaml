@@ -1,4 +1,8 @@
 spring:
+  security:
+    user:
+      name: dev
+      password: dev
   application:
     name: aml-tx-monitor
   datasource:

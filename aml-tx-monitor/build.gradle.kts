@@ -33,6 +33,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -46,7 +47,6 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // --- jOOQ codegen deps (verziószinkron a runtime-hoz) ---
     jooqGenerator("org.postgresql:postgresql")
     jooqGenerator("org.jooq:jooq-meta:3.19.27")
     jooqGenerator("org.jooq:jooq-codegen:3.19.27")
@@ -73,7 +73,7 @@ jooq {
                     database = org.jooq.meta.jaxb.Database().apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
-                        includes = "alert|alert_status"
+                        includes = "alert|alert_status|alert_severity"
                     }
                     generate = org.jooq.meta.jaxb.Generate().apply {
                         isPojos = true
