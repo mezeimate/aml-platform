@@ -138,5 +138,5 @@ public class AlertRepository {
                 .limit(limit)
                 .offset(offset)
                 .fetch();
-
+    }
 }
