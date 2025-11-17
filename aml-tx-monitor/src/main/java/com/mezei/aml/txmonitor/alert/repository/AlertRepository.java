@@ -1,9 +1,9 @@
 package com.mezei.aml.txmonitor.alert.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mezei.aml.jooq.enums.AlertSeverity;
 import com.mezei.aml.jooq.enums.AlertStatus;
 import com.mezei.aml.jooq.tables.records.AlertRecord;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -18,13 +18,10 @@ import java.util.UUID;
 import static com.mezei.aml.jooq.tables.Alert.ALERT;
 
 @Repository
+@RequiredArgsConstructor
 public class AlertRepository {
 
     private final DSLContext dsl;
-
-    public AlertRepository(DSLContext dsl, ObjectMapper om) {
-        this.dsl = dsl;
-    }
 
     public AlertRecord newRecord() {
         return dsl.newRecord(ALERT);

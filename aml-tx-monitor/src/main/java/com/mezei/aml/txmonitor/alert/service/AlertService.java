@@ -8,27 +8,24 @@ import com.mezei.aml.jooq.tables.records.AlertRecord;
 import com.mezei.aml.txmonitor.alert.dto.AlertResponse;
 import com.mezei.aml.txmonitor.alert.dto.CreateAlertRequest;
 import com.mezei.aml.txmonitor.alert.repository.AlertRepository;
+import lombok.RequiredArgsConstructor;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AlertService {
 
     private final AlertRepository alertRepository;
     private final ObjectMapper objectMapper;
-
-    public AlertService(AlertRepository alertRepository, ObjectMapper objectMapper) {
-        this.alertRepository = alertRepository;
-        this.objectMapper = objectMapper;
-    }
 
     @Transactional
     public AlertResponse createAlert(CreateAlertRequest request) {
@@ -65,12 +62,13 @@ public class AlertService {
         return toDto(saved);
     }
 
-
+    @Transactional(readOnly = true)
     public Optional<AlertResponse> getAlertById(UUID id) {
         return alertRepository.findById(id)
                 .map(this::toDto);
     }
 
+    @Transactional(readOnly = true)
     public List<AlertResponse> listAlerts(int limit, int offset) {
         return alertRepository.list(limit, offset)
                 .stream()
@@ -128,6 +126,15 @@ public class AlertService {
         return deletedRows > 0;
     }
 
+    @Transactional(readOnly = true)
+    public List<AlertResponse> searchAlerts(String status, String severity, String label, String customerId,
+            OffsetDateTime from, OffsetDateTime to, int limit, int offset) {
+        return alertRepository.search(status, severity, label, customerId, from, to, limit, offset)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
     private AlertResponse toDto(AlertRecord r) {
         return new AlertResponse(
                 r.getId(),
@@ -156,7 +163,7 @@ public class AlertService {
             if (jsonb == null) {
                 return Map.of();
             }
-            return objectMapper.readValue(jsonb.data(), new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(jsonb.data(), new TypeReference<>() {});
         } catch (Exception e) {
             return Map.of();
         }

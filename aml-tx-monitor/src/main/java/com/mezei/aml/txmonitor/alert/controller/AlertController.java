@@ -5,23 +5,23 @@ import com.mezei.aml.txmonitor.alert.dto.CreateAlertRequest;
 import com.mezei.aml.txmonitor.alert.dto.UpdateAlertStatusRequest;
 import com.mezei.aml.txmonitor.alert.service.AlertService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/alerts")
+@RequiredArgsConstructor
 public class AlertController {
 
     private final AlertService alertService;
-
-    public AlertController(AlertService alertService) {
-        this.alertService = alertService;
-    }
 
     @PostMapping
     public ResponseEntity<AlertResponse> createAlert(@RequestBody @Valid CreateAlertRequest request) {
@@ -77,5 +77,27 @@ public class AlertController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AlertResponse>> searchAlerts(
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "severity", required = false) String severity,
+            @RequestParam(name = "label", required = false) String label,
+            @RequestParam(name = "customerId", required = false) String customerId,
+
+            @RequestParam(name = "from", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            OffsetDateTime from,
+
+            @RequestParam(name = "to", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            OffsetDateTime to,
+
+            @RequestParam(name = "limit", defaultValue = "20") int limit,
+            @RequestParam(name = "offset", defaultValue = "0") int offset) {
+        List<AlertResponse> results = alertService.searchAlerts(status, severity, label,
+                customerId, from, to, limit, offset);
+        return ResponseEntity.ok(results);
     }
 }
