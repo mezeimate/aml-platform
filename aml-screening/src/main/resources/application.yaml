@@ -1,9 +1,9 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
-    name: aml-ingest
+    name: aml-screening
 
   artemis:
     mode: native
@@ -13,11 +13,4 @@ spring:
 
 aml:
   queues:
-    bank-tx-in: BANK.TX.IN
     screening-tx: AML.SCREENING.TX
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
