@@ -6,7 +6,7 @@ import com.mezei.aml.jooq.enums.AlertSeverity;
 import com.mezei.aml.jooq.enums.AlertStatus;
 import com.mezei.aml.jooq.tables.records.AlertRecord;
 import com.mezei.aml.txmonitor.alert.dto.AlertResponse;
-import com.mezei.aml.txmonitor.alert.dto.CreateAlertRequest;
+import com.mezei.aml.common.alert.dto.CreateAlertRequest;
 import com.mezei.aml.txmonitor.alert.repository.AlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.JSONB;

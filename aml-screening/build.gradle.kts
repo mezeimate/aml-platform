@@ -22,8 +22,12 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-artemis")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.core:jackson-databind")
+
+    // Netty native DNS MacOS ARM (M1/M2/M3/M4)
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.114.Final:osx-aarch_64")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")

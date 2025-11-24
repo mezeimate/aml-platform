@@ -15,6 +15,7 @@ aml:
   queues:
     bank-tx-in: BANK.TX.IN
     screening-tx: AML.SCREENING.TX
+    bank-tx-in-dlq: BANK.TX.IN.DLQ
 
 management:
   endpoints:

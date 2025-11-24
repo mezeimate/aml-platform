@@ -14,3 +14,6 @@ spring:
 aml:
   queues:
     screening-tx: AML.SCREENING.TX
+  txmonitor:
+    base-url: http://localhost:8081
+

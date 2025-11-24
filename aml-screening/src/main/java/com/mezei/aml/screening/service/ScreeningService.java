@@ -1,31 +1,74 @@
 package com.mezei.aml.screening.service;
 
 import com.mezei.aml.common.tx.TransactionEvent;
+import com.mezei.aml.screening.client.AlertClient;
+import com.mezei.aml.screening.model.ScreeningDecision;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+import java.math.BigDecimal;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScreeningService {
 
+    private final AlertClient alertClient;
+
     public void evaluate(TransactionEvent event) {
+        log.info("Evaluating TransactionEvent in ScreeningService...");
 
-        log.info("Evaluating TransactionEvent...");
+        ScreeningDecision decision = evaluateRules(event);
 
-        // szabalyok
-        boolean suspicious = dummyRule(event);
-
-        if (suspicious) {
-            log.info("Transaction suspicious → ALERT should be created");
-            // call aml-tx-monitor http
+        if (decision.createAlert()) {
+            log.info("Transaction marked suspicious, creating alert...");
+            alertClient.createAlert(event, decision);
         } else {
-            log.info("✔ Transaction NOT suspicious");
+            log.info("Transaction NOT suspicious, no alert.");
         }
     }
 
-    private boolean dummyRule(TransactionEvent event) {
-        return event.amount().longValue() > 150_000;
+    private ScreeningDecision evaluateRules(TransactionEvent event) {
+        // MVP dummy rule: amount > 150_000 → HIGH severity, 80-as riskScore
+        boolean suspicious = event.amount() != null
+                && event.amount().longValue() > 150_000;
+
+        if (!suspicious) {
+            return new ScreeningDecision(
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    List.of(),
+                    "No rule triggered",
+                    null
+            );
+        }
+
+        String ruleId = "R001_HIGH_AMOUNT";
+        String ruleVersion = "1.0";
+        String severity = "HIGH";
+        BigDecimal riskScore = BigDecimal.valueOf(80);
+
+        String dedupeKey = ruleId + "|" + event.customerId() + "|" + event.accountId();
+        var labels = List.of("HIGH_AMOUNT", "DUMMY_RULE");
+        String explanation = "Amount above 150_000 threshold";
+        String assignedTo = null; // egyelőre nincs investigator
+
+        return new ScreeningDecision(
+                true,
+                ruleId,
+                ruleVersion,
+                severity,
+                riskScore,
+                dedupeKey,
+                labels,
+                explanation,
+                assignedTo
+        );
     }
 }

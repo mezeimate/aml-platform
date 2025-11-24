@@ -1,7 +1,7 @@
 package com.mezei.aml.txmonitor.alert.controller;
 
 import com.mezei.aml.txmonitor.alert.dto.AlertResponse;
-import com.mezei.aml.txmonitor.alert.dto.CreateAlertRequest;
+import com.mezei.aml.common.alert.dto.CreateAlertRequest;
 import com.mezei.aml.txmonitor.alert.dto.UpdateAlertStatusRequest;
 import com.mezei.aml.txmonitor.alert.service.AlertService;
 import jakarta.validation.Valid;

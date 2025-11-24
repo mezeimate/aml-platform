@@ -1,4 +1,4 @@
-package com.mezei.aml.txmonitor.alert.dto;
+package com.mezei.aml.common.alert.dto;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
