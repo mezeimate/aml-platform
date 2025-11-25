@@ -4,16 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mezei.aml.ingest.transaction.service.TransactionIngestService;
 import com.mezei.aml.ingest.transaction.dto.BankTransactionMessage;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -30,20 +26,13 @@ public class BankTransactionListener {
 
     @JmsListener(destination = "${aml.queues.bank-tx-in}")
     public void onMessage(String json) {
-
         try {
             log.info("Received raw JSON from '{}': {}", bankQueue, json);
 
             BankTransactionMessage msg = objectMapper.readValue(json, BankTransactionMessage.class);
-            Set<ConstraintViolation<BankTransactionMessage>> violations = validator.validate(msg);
-            if (!violations.isEmpty()) {
-
-                String errorSummary = violations.stream()
-                        .map(v -> v.getPropertyPath() + " " + v.getMessage())
-                        .collect(Collectors.joining("; "));
-
-                log.error("Validation failed: {}. Sending to DLQ.", errorSummary);
-                dlqProducer.sendToDlq(new DlqError("VALIDATION_ERROR", errorSummary, json));
+            if (!validator.validate(msg).isEmpty()) {
+                log.error("Validation failed, message sending to DLQ.");
+                dlqProducer.sendToDlq(new DlqError("VALIDATION_ERROR", "VALIDATION_ERROR", json));
                 return;
             }
             log.info("Parsed & validated BankTransactionMessage: {}", msg);
