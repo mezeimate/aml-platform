@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.github.bjornvester.xjc") version "1.9.0"
 }
 
 group = "com.mezei.aml"
@@ -38,4 +39,8 @@ tasks.jar {
 }
 tasks.bootJar {
     enabled = true
+}
+
+xjc {
+    xsdDir.set(layout.projectDirectory.dir("src/main/schema"))
 }

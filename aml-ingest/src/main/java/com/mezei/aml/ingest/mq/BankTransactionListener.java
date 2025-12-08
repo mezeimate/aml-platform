@@ -2,6 +2,7 @@ package com.mezei.aml.ingest.mq;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mezei.aml.common.constants.AmlConstants;
 import com.mezei.aml.ingest.transaction.service.TransactionIngestService;
 import com.mezei.aml.ingest.transaction.dto.BankTransactionMessage;
 import jakarta.validation.Validator;
@@ -32,7 +33,7 @@ public class BankTransactionListener {
             BankTransactionMessage msg = objectMapper.readValue(json, BankTransactionMessage.class);
             if (!validator.validate(msg).isEmpty()) {
                 log.error("Validation failed, message sending to DLQ.");
-                dlqProducer.sendToDlq(new DlqError("VALIDATION_ERROR", "VALIDATION_ERROR", json));
+                dlqProducer.sendToDlq(new DlqError(AmlConstants.ERROR_CODE_VALIDATION, AmlConstants.ERROR_CODE_JSON_PARSE, json));
                 return;
             }
             log.info("Parsed & validated BankTransactionMessage: {}", msg);
@@ -40,11 +41,11 @@ public class BankTransactionListener {
 
         } catch (JsonProcessingException e) {
             log.error("JSON parse error, sending to DLQ: {}", json, e);
-            dlqProducer.sendToDlq(new DlqError("JSON_PARSE_ERROR", e.getMessage(), json));
+            dlqProducer.sendToDlq(new DlqError(AmlConstants.ERROR_CODE_JSON_PARSE, e.getMessage(), json));
 
         } catch (Exception e) {
             log.error("Unexpected ingest error, sending to DLQ: {}", json, e);
-            dlqProducer.sendToDlq(new DlqError("UNKNOWN_ERROR", e.getMessage(), json));
+            dlqProducer.sendToDlq(new DlqError(AmlConstants.ERROR_CODE_UNKNOWN, e.getMessage(), json));
         }
     }
 }

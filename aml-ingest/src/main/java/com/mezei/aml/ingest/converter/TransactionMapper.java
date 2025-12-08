@@ -12,9 +12,9 @@ public class TransactionMapper {
 
     public static TransactionEvent transactionToEvent(BankTransactionMessage r) {
         return new TransactionEvent(
-                UUID.randomUUID(),          // eventId
-                Instant.now(),              // eventTimestamp
-                "1.0",                      // schemaVersion
+                UUID.randomUUID(),
+                Instant.now(),
+                "1.0",
 
                 r.transactionId(),
                 r.transactionTimestamp(),

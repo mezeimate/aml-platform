@@ -4,6 +4,9 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+/**
+ * Input from client.
+ */
 public record BankTransactionMessage(
 
         @NotBlank

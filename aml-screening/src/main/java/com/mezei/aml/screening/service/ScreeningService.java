@@ -31,7 +31,6 @@ public class ScreeningService {
     }
 
     private ScreeningDecision evaluateRules(TransactionEvent event) {
-        // MVP dummy rule: amount > 150_000 → HIGH severity, 80-as riskScore
         boolean suspicious = event.amount() != null
                 && event.amount().longValue() > 150_000;
 
@@ -57,7 +56,7 @@ public class ScreeningService {
         String dedupeKey = ruleId + "|" + event.customerId() + "|" + event.accountId();
         var labels = List.of("HIGH_AMOUNT", "DUMMY_RULE");
         String explanation = "Amount above 150_000 threshold";
-        String assignedTo = null; // egyelőre nincs investigator
+        String assignedTo = null;
 
         return new ScreeningDecision(
                 true,

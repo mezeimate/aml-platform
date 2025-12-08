@@ -29,7 +29,7 @@ public class AlertClient {
                 .bodyValue(request)
                 .retrieve()
                 .toBodilessEntity()
-                .block(); // MVP-ben elmegy
+                .block();
 
         log.info("Alert create request sent for tx {}", event.transactionId());
     }
@@ -41,27 +41,26 @@ public class AlertClient {
                 ? event.eventTimestamp().atOffset(ZoneOffset.UTC)
                 : OffsetDateTime.now(ZoneOffset.UTC);
 
-        // payload: TransactionEvent + ScreeningDecision együtt, JSONB-be jó lesz
         Map<String, Object> payload = Map.of(
                 "transactionEvent", event,
                 "screeningDecision", d
         );
 
         return new CreateAlertRequest(
-                event.transactionId(),      // externalId
-                d.dedupeKey(),              // dedupeKey
-                title,                      // title
-                d.severity(),               // severity
-                d.riskScore(),              // riskScore (BigDecimal)
-                "SCREENING",                // source
-                d.ruleId(),                 // ruleId
-                d.ruleVersion(),            // ruleVersion
-                event.customerId(),         // customerId
-                event.accountId(),          // accountId
-                detectedAt,                 // detectedAt (OffsetDateTime)
-                payload,                    // payload (Map<String,Object>)
-                d.labels(),                 // labels
-                d.assignedTo()              // assignedTo
+                event.transactionId(),
+                d.dedupeKey(),
+                title,
+                d.severity(),
+                d.riskScore(),
+                "SCREENING",
+                d.ruleId(),
+                d.ruleVersion(),
+                event.customerId(),
+                event.accountId(),
+                detectedAt,
+                payload,
+                d.labels(),
+                d.assignedTo()
         );
     }
 }
