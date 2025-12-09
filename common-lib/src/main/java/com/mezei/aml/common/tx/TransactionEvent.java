@@ -1,9 +1,12 @@
 package com.mezei.aml.common.tx;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@Builder
 public record TransactionEvent(
         UUID eventId,
         Instant eventTimestamp,
