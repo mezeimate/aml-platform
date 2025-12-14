@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.13">
+    <FIToFICstmrCdtTrf>
+        <GrpHdr>
+            <MsgId>MSG20251214001</MsgId>
+            <CreDtTm>2025-12-14T10:15:30Z</CreDtTm>
+            <NbOfTxs>1</NbOfTxs>
+            <SttlmInf>
+                <SttlmMtd>CLRG</SttlmMtd>
+            </SttlmInf>
+        </GrpHdr>
+
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>INSTR-0001</InstrId>
+                <EndToEndId>E2E-0001</EndToEndId>
+                <TxId>TX-0001</TxId>
+            </PmtId>
+
+            <IntrBkSttlmAmt Ccy="HUF">10000.00</IntrBkSttlmAmt>
+            <IntrBkSttlmDt>2025-12-15</IntrBkSttlmDt>
+            <ChrgBr>SLEV</ChrgBr>
+
+            <Dbtr>
+                <Nm>Küldő Ügyfél</Nm>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>HU42117730161111101800000000</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BICFI>BANKHUHBXXX</BICFI>
+                </FinInstnId>
+            </DbtrAgt>
+
+            <CdtrAgt>
+                <FinInstnId>
+                    <BICFI>ERSTHUHBXXX</BICFI>
+                </FinInstnId>
+            </CdtrAgt>
+            <Cdtr>
+                <Nm>Kedvezményezett Ügyfél</Nm>
+            </Cdtr>
+            <CdtrAcct>
+                <Id>
+                    <IBAN>HU93116000060000000012345676</IBAN>
+                </Id>
+            </CdtrAcct>
+
+            <RmtInf>
+                <Ustrd>Számlafizetés 12345</Ustrd>
+            </RmtInf>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>
