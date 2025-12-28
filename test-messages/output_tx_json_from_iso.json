@@ -1,0 +1,20 @@
+{
+  "eventId": "e08673ab-535c-4613-8423-92dfc4f21d54",
+  "eventTimestamp": "2025-12-28T17:42:23.629856Z",
+  "schemaVersion": "1.0",
+  "transactionId": "E2E-0001",
+  "transactionTimestamp": "2025-12-14T10:15:30Z",
+  "channel": "ISO20022_PACS008",
+  "customerId": "HU42117730161111101800000000",
+  "accountId": "HU42117730161111101800000000",
+  "counterpartyAccount": "HU93116000060000000012345676",
+  "counterpartyName": "Kedvezményezett Ügyfél",
+  "amount": 10000.00,
+  "currency": "HUF",
+  "direction": "DEBIT",
+  "country": "HU",
+  "originCountry": "HU",
+  "destinationCountry": "HU",
+  "mcc": null,
+  "description": "Számlafizetés 12345"
+}

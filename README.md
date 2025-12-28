@@ -6,3 +6,4 @@
 # from the repo root
 cd aml-platform
 ./gradlew :aml-tx-monitor:bootRun
+```
