@@ -3,11 +3,12 @@ package com.mezei.aml.screening.service;
 import com.mezei.aml.common.tx.TransactionEvent;
 import com.mezei.aml.screening.client.AlertClient;
 import com.mezei.aml.screening.model.ScreeningDecision;
+import com.mezei.aml.screening.rules.RuleEngine;
+import com.mezei.aml.screening.rules.RuleHit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -16,58 +17,50 @@ import java.util.List;
 public class ScreeningService {
 
     private final AlertClient alertClient;
+    private final RuleEngine ruleEngine;
 
     public void evaluate(TransactionEvent event) {
-        log.info("Evaluating TransactionEvent in ScreeningService...");
+        List<RuleHit> hits = ruleEngine.evaluate(event);
+        ScreeningDecision decision = toDecision(event, hits);
 
-        ScreeningDecision decision = evaluateRules(event);
+        if (!decision.createAlert()) {
+            log.info("Not suspicious. hits={}", hits.size());
+            return;
+        }
 
-        if (decision.createAlert()) {
-            log.info("Transaction marked suspicious, creating alert...");
+        log.info("Suspicious transaction. hits={}, topRule={}", hits.size(), decision.ruleId());
+
+        try {
             alertClient.createAlert(event, decision);
-        } else {
-            log.info("Transaction NOT suspicious, no alert.");
+        } catch (Exception e) {
+            log.error("Failed to create alert for txId={}, ruleId={}.", event.transactionId(), decision.ruleId(), e);
         }
     }
 
-    private ScreeningDecision evaluateRules(TransactionEvent event) {
-        boolean suspicious = event.amount() != null
-                && event.amount().longValue() > 150_000;
-
-        if (!suspicious) {
-            return new ScreeningDecision(
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(),
-                    "No rule triggered",
-                    null
-            );
+    private ScreeningDecision toDecision(TransactionEvent event, List<RuleHit> hits) {
+        if (hits.isEmpty()) {
+            return new ScreeningDecision(false, null, null, null, null, null, List.of(), "No rule triggered", null);
         }
 
-        String ruleId = "R001_HIGH_AMOUNT";
-        String ruleVersion = "1.0";
-        String severity = "HIGH";
-        BigDecimal riskScore = BigDecimal.valueOf(80);
+        RuleHit top = hits.getFirst();
 
-        String dedupeKey = ruleId + "|" + event.customerId() + "|" + event.accountId();
-        var labels = List.of("HIGH_AMOUNT", "DUMMY_RULE");
-        String explanation = "Amount above 150_000 threshold";
-        String assignedTo = null;
+        var allLabels = hits.stream().flatMap(h -> h.labels().stream()).distinct().toList();
+        String explanation = hits.stream()
+                .map(h -> h.ruleId() + ": " + (h.explanation() == null ? "" : h.explanation()))
+                .distinct()
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Rule triggered");
 
         return new ScreeningDecision(
                 true,
-                ruleId,
-                ruleVersion,
-                severity,
-                riskScore,
-                dedupeKey,
-                labels,
+                top.ruleId(),
+                top.ruleVersion(),
+                top.severity(),
+                top.riskScore(),
+                top.dedupeKey(),
+                allLabels,
                 explanation,
-                assignedTo
+                null
         );
     }
 }

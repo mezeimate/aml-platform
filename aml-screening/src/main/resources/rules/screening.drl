@@ -1,0 +1,67 @@
+package rules
+
+import java.math.BigDecimal;
+
+import com.mezei.aml.screening.rules.TxFact;
+import com.mezei.aml.screening.rules.RuleHit;
+
+global java.util.List hits;
+
+// 1) Nagy összeg HUF -> HIGH
+rule "R001_HIGH_AMOUNT_HUF"
+when
+    $f : TxFact(
+        currency == "HUF",
+        amount != null,
+        amount.compareTo(new BigDecimal("150000")) >= 0
+    )
+then
+    hits.add(new RuleHit(
+        "R001_HIGH_AMOUNT_HUF",
+        "1.0",
+        "HIGH",
+        new BigDecimal("80.0"),
+        "tx:" + $f.getTransactionId() + "|rule:R001_HIGH_AMOUNT_HUF",
+        java.util.List.of("AMOUNT_HIGH"),
+        "Amount >= 150000 HUF"
+    ));
+end
+
+// 2) Külföldi (origin != destination) -> MEDIUM
+rule "R002_CROSS_BORDER"
+when
+    $f : TxFact(
+        originCountry != null,
+        destinationCountry != null,
+        !originCountry.equals(destinationCountry)
+    )
+then
+    hits.add(new RuleHit(
+        "R002_CROSS_BORDER",
+        "1.0",
+        "MEDIUM",
+        new BigDecimal("50.0"),
+        "tx:" + $f.getTransactionId() + "|rule:R002_CROSS_BORDER",
+        java.util.List.of("CROSS_BORDER"),
+        "Cross-border transaction"
+    ));
+end
+
+// 3) Nagyon nagy összeg (bármilyen pénznem) -> CRITICAL
+rule "R003_VERY_HIGH_AMOUNT_ANY"
+when
+    $f : TxFact(
+        amount != null,
+        amount.compareTo(new BigDecimal("1000000")) >= 0
+    )
+then
+    hits.add(new RuleHit(
+        "R003_VERY_HIGH_AMOUNT_ANY",
+        "1.0",
+        "CRITICAL",
+        new BigDecimal("95.0"),
+        "tx:" + $f.getTransactionId() + "|rule:R003_VERY_HIGH_AMOUNT_ANY",
+        java.util.List.of("AMOUNT_VERY_HIGH"),
+        "Amount >= 1,000,000 (any currency)"
+    ));
+end
